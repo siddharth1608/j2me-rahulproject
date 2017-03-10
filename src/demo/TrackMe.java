@@ -39,7 +39,7 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 		display = Display.getDisplay(this);
 		
 		//Form - Title
-	    form = new Form("TrackMe");
+	    form = new Form("This is my first Eclipse J2me App");
 	    
 	    //Form - Exit Command
 	    exit = new Command("Exit", Command.EXIT, 1);
