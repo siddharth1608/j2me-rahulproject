@@ -10,7 +10,7 @@ public class Main extends MIDlet {
 	private Display display;
 
 	public Main() {
-		// TODO Auto-generated constructor stub
+		
 	}
 
 	protected void destroyApp(boolean arg0) throws MIDletStateChangeException {
