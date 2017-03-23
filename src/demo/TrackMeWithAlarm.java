@@ -1,16 +1,18 @@
 package demo;
 
+import java.util.Date;
+
+import javax.microedition.io.ConnectionNotFoundException;
 import javax.microedition.io.Connector;
 import javax.microedition.io.HttpConnection;
+import javax.microedition.io.PushRegistry;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
 import javax.microedition.lcdui.Display;
 import javax.microedition.lcdui.Displayable;
 import javax.microedition.lcdui.Form;
-import javax.microedition.lcdui.Item;
 import javax.microedition.lcdui.StringItem;
 import javax.microedition.lcdui.TextField;
-import javax.microedition.location.Criteria;
 import javax.microedition.location.Location;
 import javax.microedition.location.LocationListener;
 import javax.microedition.location.LocationProvider;
@@ -18,7 +20,7 @@ import javax.microedition.location.QualifiedCoordinates;
 import javax.microedition.midlet.MIDlet;
 import javax.microedition.midlet.MIDletStateChangeException;
 
-public class TrackMe extends MIDlet implements CommandListener, LocationListener {
+public class TrackMeWithAlarm extends MIDlet implements CommandListener, LocationListener {
 
 	
 	private Display display;
@@ -32,8 +34,9 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 	private int sec = 1;
 	private Command stop;
 	private LocationProvider locationProvider;
+	private StringItem state;
 	
-	public TrackMe() {
+	public TrackMeWithAlarm() {
 		
 		
 		display = Display.getDisplay(this);
@@ -66,15 +69,12 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 	    info = new StringItem("Location:","unknown");
 	    form.append(info);
 	    
+	    //Form - Location Provider current state
+	    state = new StringItem("Status:","Offline");
+	    form.append(state);
 	    
 	    try {
-	    	
-	    	//Set accuracy to 500 meters horizontally
-	    	Criteria cr=new Criteria();
-	    	cr.setHorizontalAccuracy(500);
-	    	
-	    	//Get instance of the provider
-	        locationProvider = LocationProvider.getInstance(cr);
+	        locationProvider = LocationProvider.getInstance(null);
 	      } catch (Exception e) {
 	        exit();
 	      }
@@ -94,6 +94,9 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 		
 		if (cmd == start) {
 			form.removeCommand(start);
+			
+			
+			
 			emailStr = (email.getString() !=null)? email.getString():"demo@xyz.com";
 			
 			sec = (interval.getString() != null)? Integer.parseInt(interval.getString()) : 5;
@@ -101,7 +104,7 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 			// Start querying GPS data :
 			new Thread(){
 		        public void run(){
-		          locationProvider.setLocationListener(TrackMe.this, sec, -1, -1);
+		          locationProvider.setLocationListener(TrackMeWithAlarm.this, sec, -1, -1);
 			  }
 			}.start();
 			
@@ -110,6 +113,8 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 		
 		if (cmd == stop) {
 			form.removeCommand(stop);
+			
+			state.setText("Offline");
 			
 		      // Stop querying GPS data :			
 			new Thread(){
@@ -122,7 +127,20 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 		}		
 	}
 	
+	//This method is called when the location is updated
 	public void locationUpdated(LocationProvider provider, Location location) {
+		
+		if(provider.getState() == LocationProvider.OUT_OF_SERVICE){
+			
+			state.setText("Disconnected");
+			
+		}
+		else if(provider.getState() == LocationProvider.TEMPORARILY_UNAVAILABLE){
+			state.setText("Temporarily down");
+		}
+		else{
+			state.setText("Connected");
+		}
 		
 		if (location != null && location.isValid()) {
 		      QualifiedCoordinates qc = location.getQualifiedCoordinates();
@@ -142,8 +160,11 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 			      connection = (HttpConnection) Connector.open(url);
 			      int rc = connection.getResponseCode();
 			      connection.close();
+			      
 			    }
-			    catch(Exception e){}
+			    catch(Exception e){
+			    	
+			    }
 			    finally {
 			      try {
 			        connection.close();
@@ -157,14 +178,48 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 
 	}
 
+	// This method is called when the state of Location Provider is changed
 	public void providerStateChanged(LocationProvider provider, int newState) {
 		// TODO Auto-generated method stub
+		
+		if(newState == LocationProvider.OUT_OF_SERVICE){
+			
+			state.setText("Disconnected");
+			
+		}
+		else if(newState == LocationProvider.TEMPORARILY_UNAVAILABLE){
+			state.setText("Temporarily down");
+		}
+		else{
+			state.setText("Connected");
+		}
+		
 		
 	}
 	
 	protected void destroyApp(boolean arg0) {
 		// TODO Auto-generated method stub
-
+		
+		new Thread(){
+			
+			public void run(){
+				try {
+					
+					long l = PushRegistry.registerAlarm("demo.TrackMeWithAlarm", new Date().getTime()+8000);
+					
+				} catch (ConnectionNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+			
+		}.start();
+		
+			
+		display=null;
 	}
 
 	protected void pauseApp() {
@@ -172,7 +227,7 @@ public class TrackMe extends MIDlet implements CommandListener, LocationListener
 
 	}
 
-
+	
 
 
 	

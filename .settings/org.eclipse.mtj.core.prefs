@@ -1,0 +1,6 @@
+eclipse.preferences.version=1
+pkg_autoversion=true
+pkg_excluded_props=LIBlet-Jar-URL|LIBlet-Jar-Size
+pkg_use_project=true
+preverify_config_location=jad
+preverify_config_value=CLDC-1.0
