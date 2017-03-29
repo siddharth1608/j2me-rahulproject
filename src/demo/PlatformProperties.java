@@ -1,5 +1,6 @@
 package demo;
 
+import javax.bluetooth.LocalDevice;
 import javax.microedition.lcdui.Alert;
 import javax.microedition.lcdui.Command;
 import javax.microedition.lcdui.CommandListener;
@@ -57,6 +58,7 @@ public class PlatformProperties extends MIDlet implements CommandListener{
 		StringItem prop11 = new StringItem("Smart card slots", System.getProperty("microedition.smartcardslots"));
 		StringItem prop12 = new StringItem("CHAPI Version", System.getProperty("CHAPI-Version"));
 		StringItem prop13 = new StringItem("CellId", getCellID());
+		StringItem prop14 = new StringItem("Bluetooth API",LocalDevice.getProperty("bluetooth.api.version"));
 		
 		form.append(prop1);
 		form.append(prop2);
@@ -71,6 +73,7 @@ public class PlatformProperties extends MIDlet implements CommandListener{
 		form.append(prop11);
 		form.append(prop12);
 		form.append(prop13);
+		form.append(prop14);
 		
 	}
 

@@ -5,10 +5,12 @@ MIDlet-4: AlarmDemo,,demo.AlarmDemo
 MIDlet-5: TrackMeWithAlarm,,demo.TrackMeWithAlarm
 MIDlet-6: PlainLocation,,demo.PlainLocation
 MIDlet-7: PlatformProperties,,demo.PlatformProperties
+MIDlet-8: BluetoothDemo,,demo.BluetoothDemo
+MIDlet-9: PlatformPermissions,,demo.PlatformPermissions
 MIDlet-Jar-URL: demo.jar
 MIDlet-Name: demo MIDlet Suite
 MIDlet-Permissions: javax.microedition.io.Connector.http,javax.microedition.io.PushRegistry,javax.microedition.location.Location,javax.microedition.location.ProximityListener
 MIDlet-Vendor: MIDlet Suite Vendor
-MIDlet-Version: 2.0.25
+MIDlet-Version: 2.0.31
 MicroEdition-Configuration: CLDC-1.1
 MicroEdition-Profile: MIDP-2.1
